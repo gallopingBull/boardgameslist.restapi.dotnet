@@ -1,12 +1,12 @@
-﻿namespace MyBGList.DTO
+﻿namespace MyBGList.DTO.v1
 {
     public class LinkDTO
     {
         public LinkDTO(string href, string rel, string type)
         {
             Href = href;
-            Rel = rel;  
-            Type = type;    
+            Rel = rel;
+            Type = type;
         }
 
         public string Href { get; private set; }
