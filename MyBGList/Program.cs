@@ -74,14 +74,20 @@ else
 app.UseHttpsRedirection();
 app.UseCors("AnyOrigin");
 app.UseAuthorization();
-app.MapGet("/error", 
+app.MapGet("/v{version:ApiVersion}/error",
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     [EnableCors("AnyOrigin")]
     [ResponseCache(NoStore = true)] () => 
     Results.Problem()).RequireCors("AnyOrigin");
-//app.MapGet("/error/test",
+//app.MapGet("/v{version:ApiVersion}/error/test",
+//[ApiVersion("1.0")]
+//[ApiVersion("2.0")]
 //[EnableCors("AnyOrigin")]
 //[ResponseCache(NoStore = true)] () => { throw new Exception("test"); });
-app.MapGet("/cod/test",
+app.MapGet("/v{version:ApiVersion}/cod/test",
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     [EnableCors("AnyOrigin")]
     [ResponseCache(NoStore = true)] () =>
     Results.Text("<script>" +
