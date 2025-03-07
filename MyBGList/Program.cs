@@ -19,6 +19,9 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc(
         "v2",
         new OpenApiInfo { Title = "MyBGList", Version = "v2.0" });
+    options.SwaggerDoc(
+       "v3",
+       new OpenApiInfo { Title = "MyBGList", Version = "v3.0" });
 });
 
 builder.Services.AddApiVersioning(options =>
@@ -62,8 +65,11 @@ if (app.Configuration.GetValue<bool>("UseSwagger"))
             $"/swagger/v1/swagger.json",
             $"MyBGList v1");
         options.SwaggerEndpoint(
-          $"/swagger/v2/swagger.json",
-          $"MyBGList v2");
+            $"/swagger/v2/swagger.json",
+            $"MyBGList v2");
+        options.SwaggerEndpoint(
+            $"/swagger/v3/swagger.json",
+            $"MyBGList v3");
     });
 }
 if (app.Configuration.GetValue<bool>("UseDeveloperExceptionPage"))
