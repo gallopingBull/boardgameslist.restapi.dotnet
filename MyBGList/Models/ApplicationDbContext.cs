@@ -14,7 +14,12 @@ namespace MyBGList.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            // TODO: custom code here
+
+            modelBuilder.Entity<BoardGames_Domains>()
+                .HasKey(i => new { i.BoardGameId, i.DomainId });
+
+            modelBuilder.Entity<BoardGames_Mechanics>()
+                .HasKey(i => new { i.BoardGameId, i.MechanicId });
         }
     }
 }
