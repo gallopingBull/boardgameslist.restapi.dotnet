@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using MyBGList.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,12 +13,36 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc(
+        "v1",
+        new OpenApiInfo { Title = "MyBGList", Version = "v1.0" });
+    options.SwaggerDoc(
+        "v2",
+        new OpenApiInfo { Title = "MyBGList", Version = "v2.0" });
+    options.SwaggerDoc(
+       "v3",
+       new OpenApiInfo { Title = "MyBGList", Version = "v3.0" });
+});
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"))
     );
+
+builder.Services.AddApiVersioning(options =>
+{
+    options.ApiVersionReader = new UrlSegmentApiVersionReader();
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+});
+
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+});
 
 builder.Services.AddCors(options =>
 {
@@ -27,15 +53,11 @@ builder.Services.AddCors(options =>
         cfg.AllowAnyMethod();
     });
     options.AddPolicy(name: "AnyOrigin",
-        cfg => {
+        cfg =>
+        {
             cfg.AllowAnyOrigin();
             cfg.AllowAnyHeader();
             cfg.AllowAnyMethod();
-        });
-    options.AddPolicy(name: "AnyOrigin_GetOnly",
-        cfg => {
-            cfg.AllowAnyOrigin();
-            cfg.AllowAnyHeader();
         });
 });
 
@@ -45,7 +67,18 @@ var app = builder.Build();
 if (app.Configuration.GetValue<bool>("UseSwagger"))
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint(
+            $"/swagger/v1/swagger.json",
+            $"MyBGList v1");
+        options.SwaggerEndpoint(
+            $"/swagger/v2/swagger.json",
+            $"MyBGList v2");
+        options.SwaggerEndpoint(
+            $"/swagger/v3/swagger.json",
+            $"MyBGList v3");
+    });
 }
 if (app.Configuration.GetValue<bool>("UseDeveloperExceptionPage"))
     app.UseDeveloperExceptionPage();
@@ -55,16 +88,22 @@ else
 app.UseHttpsRedirection();
 app.UseCors("AnyOrigin");
 app.UseAuthorization();
-app.MapGet("/error",
+app.MapGet("/v{version:ApiVersion}/error",
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     [EnableCors("AnyOrigin")]
-[ResponseCache(NoStore = true)] () =>
+    [ResponseCache(NoStore = true)] () =>
     Results.Problem()).RequireCors("AnyOrigin");
-//app.MapGet("/error/test",
+//app.MapGet("/v{version:ApiVersion}/error/test",
+//[ApiVersion("1.0")]
+//[ApiVersion("2.0")]
 //[EnableCors("AnyOrigin")]
 //[ResponseCache(NoStore = true)] () => { throw new Exception("test"); });
-app.MapGet("/cod/test",
-    [EnableCors("AnyOrigin_GetOnly")]
-[ResponseCache(NoStore = true)] () =>
+app.MapGet("/v{version:ApiVersion}/cod/test",
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
+    [EnableCors("AnyOrigin")]
+    [ResponseCache(NoStore = true)] () =>
     Results.Text("<script>" +
     "window.alert('Your client supports Javascript!" +
     "\\r\\n\\r\\n" +

@@ -78,5 +78,6 @@ namespace MyBGList.Models
         public DbSet<Publisher> Publishers => Set<Publisher>();
         public DbSet<BoardGames_Domains> BoardGames_Domains => Set<BoardGames_Domains>();
         public DbSet<BoardGames_Mechanics> BoardGames_Mechanics => Set<BoardGames_Mechanics>();
+        public DbSet<BoardGames_Categories> BoardGames_Categories => Set<BoardGames_Categories>();
     }
 }
