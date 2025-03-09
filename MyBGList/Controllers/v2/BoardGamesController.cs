@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyBGList.DTO.v2;
+using MyBGList.Models;
 
 
 namespace MyBGList.Controllers.v2
