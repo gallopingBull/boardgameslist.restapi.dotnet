@@ -11,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -25,10 +26,14 @@ builder.Services.AddSwaggerGen(options =>
        "v3",
        new OpenApiInfo { Title = "MyBGList", Version = "v3.0" });
 });
+// JS: THIS IS NEEDED TO SUCCESSFULLY READ USER-SECRETS
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddUserSecrets<Program>();  // This is crucial for reading secrets
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"))
+    options.UseSqlServer(connectionString)
     );
 
 builder.Services.AddApiVersioning(options =>
@@ -61,6 +66,7 @@ builder.Services.AddCors(options =>
         });
 });
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -78,6 +84,7 @@ if (app.Configuration.GetValue<bool>("UseSwagger"))
         options.SwaggerEndpoint(
             $"/swagger/v3/swagger.json",
             $"MyBGList v3");
+        
     });
 }
 if (app.Configuration.GetValue<bool>("UseDeveloperExceptionPage"))
