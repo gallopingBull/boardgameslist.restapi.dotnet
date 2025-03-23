@@ -26,9 +26,17 @@ namespace MyBGList.Controllers.v1
             int pageIndex = 0,
             int pageSize = 10,
             string? sortcolumn = "Name",
-            string? sortOrder = "ASC")
+            string? sortOrder = "ASC",
+            string? filterQuery = null)
         {
-            var query = _context.BoardGames
+            var query = _context.BoardGames.AsQueryable();
+
+            if (!string.IsNullOrEmpty(filterQuery))
+                query = query.Where(b => b.Name.Contains(filterQuery));
+
+            var recordCount = await query.CountAsync();
+
+            query = query
                         .OrderBy($"{sortcolumn} {sortOrder}")   
                         .Skip(pageIndex * pageSize)
                         .Take(pageSize);
@@ -38,7 +46,7 @@ namespace MyBGList.Controllers.v1
                 Data = await query.ToArrayAsync(),
                 PageIndex = pageIndex,
                 PageSize = pageSize,
-                RecordCount = await _context.BoardGames.CountAsync(),
+                RecordCount = recordCount,
                 Links = new List<LinkDTO> {
                     new LinkDTO(
                         Url.Action(
