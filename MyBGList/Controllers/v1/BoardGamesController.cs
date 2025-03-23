@@ -95,5 +95,35 @@ namespace MyBGList.Controllers.v1
                 }
             };
         }
+
+        [HttpDelete(Name = "DeleteBoardGame")]
+        [ResponseCache(NoStore = true)]
+        public async Task<RestDTO<BoardGame?>> Delete(int id)
+        {
+            var boardgame = await _context.BoardGames
+                .Where(b => b.Id == id)
+                .FirstOrDefaultAsync();
+            if (boardgame != null)
+            {
+                _context.BoardGames.Remove(boardgame);
+                await _context.SaveChangesAsync();
+            };
+
+            return new RestDTO<BoardGame?>()
+            {
+                Data = boardgame,
+                Links = new List<LinkDTO>
+                {
+                    new LinkDTO(
+                            Url.Action(
+                                null,
+                                "BoardGames",
+                                id,
+                                Request.Scheme)!,
+                            "self",
+                            "DELETE"),
+                }
+            };
+        }
     }
 }
