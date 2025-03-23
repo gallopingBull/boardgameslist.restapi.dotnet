@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyBGList.DTO.v1;
+using MyBGList.DTO.v1.MyBGList.DTO;
 using MyBGList.Models;
 
 namespace MyBGList.Controllers.v1
@@ -56,6 +57,41 @@ namespace MyBGList.Controllers.v1
                             Request.Scheme)!,
                         "self",
                         "GET"),
+                }
+            };
+        }
+
+        [HttpPost(Name = "UpdateBoardGame")]
+        [ResponseCache(NoStore = true)]
+        public async Task<RestDTO<BoardGame?>> Post(BoardGameDTO model)
+        {
+            var boardgame = await _context.BoardGames
+                .Where(b => b.Id == model.Id)
+                .FirstOrDefaultAsync();
+            if (boardgame != null)
+            {
+                if (!string.IsNullOrEmpty(model.Name))
+                    boardgame.Name = model.Name;
+                if (model.Year.HasValue && model.Year.Value > 0)
+                    boardgame.Year = model.Year.Value;
+                boardgame.LastModifiedDate = DateTime.Now;
+                _context.BoardGames.Update(boardgame);
+                await _context.SaveChangesAsync();
+            };
+
+            return new RestDTO<BoardGame?>()
+            {
+                Data = boardgame,
+                Links = new List<LinkDTO>
+                {
+                    new LinkDTO(
+                            Url.Action(
+                                null,
+                                "BoardGames",
+                                model,
+                                Request.Scheme)!,
+                            "self",
+                            "POST"),
                 }
             };
         }
