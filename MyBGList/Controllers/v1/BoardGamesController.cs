@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Linq.Dynamic.Core;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyBGList.DTO.v1;
 using MyBGList.Models;
@@ -23,9 +24,12 @@ namespace MyBGList.Controllers.v1
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<RestDTO<BoardGame[]>> Get(
             int pageIndex = 0,
-            int pageSize = 10)
+            int pageSize = 10,
+            string? sortcolumn = "Name",
+            string? sortOrder = "ASC")
         {
             var query = _context.BoardGames
+                        .OrderBy($"{sortcolumn} {sortOrder}")   
                         .Skip(pageIndex * pageSize)
                         .Take(pageSize);
 
