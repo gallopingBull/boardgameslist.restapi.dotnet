@@ -10,7 +10,7 @@ namespace MyBGList.Models
         [Key]
         [Required]
         public int Id { get; set; }
-        
+
         [Required]
         public int PublisherId { get; set; }
 
@@ -55,22 +55,22 @@ namespace MyBGList.Models
 
         [Required]
         public DateTime LastModifiedDate { get; set; }
-            
+
         [MaxLength(200)]
         public string AlternateNames { get; set; } = null!;
-        
+
         [MaxLength(200)]
         public string Designer { get; set; } = null!;
-        
+
         [Required]
         public int Flags { get; set; }
 
-        public Publisher? Publisher { get; set; }   
-        
+        public Publisher? Publisher { get; set; }
+
         public ICollection<BoardGames_Domains>? BoardGames_Domains { get; set; }
 
         public ICollection<BoardGames_Mechanics>? BoardGames_Mechanics { get; set; }
-        
+
         public ICollection<BoardGames_Categories>? BoardGames_Categories { get; set; }
     }
 }
