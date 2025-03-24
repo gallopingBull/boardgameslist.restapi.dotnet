@@ -33,7 +33,7 @@ namespace MyBGList.Controllers.v1
             var query = _context.BoardGames.AsQueryable();
 
             if (!string.IsNullOrEmpty(filterQuery))
-                query = query.Where(b => b.Name.Contains(filterQuery));
+                query = query.Where(b => b.Name.StartsWith(filterQuery));
 
             var recordCount = await query.CountAsync();
 
