@@ -28,7 +28,7 @@ namespace MyBGList.Controllers.v1
         public async Task<RestDTO<BoardGame[]>> Get(
             int pageIndex = 0,
             [Range(1, 100)] int pageSize = 10,
-            [SortColumnValidator()]string? sortcolumn = "Name",
+            [SortColumnValidator(typeof(BoardGameDTO))]string? sortcolumn = "Name",
             [SortOrderValidator()] string? sortOrder = "ASC",
             string? filterQuery = null)
         {
