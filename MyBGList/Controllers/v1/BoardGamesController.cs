@@ -74,6 +74,15 @@ namespace MyBGList.Controllers.v1
                     boardgame.Name = model.Name;
                 if (model.Year.HasValue && model.Year.Value > 0)
                     boardgame.Year = model.Year.Value;
+                if (model.MinPlayers.HasValue && model.MinPlayers.Value > 0)
+                    boardgame.MinPlayers = model.MinPlayers.Value;
+                if (model.MaxPlayers.HasValue && model.MaxPlayers.Value > 0)
+                    boardgame.MaxPlayers = model.MaxPlayers.Value;
+                if (model.Playtime.HasValue && model.Playtime.Value > 0)
+                    boardgame.PlayTime = model.Playtime.Value;
+                if (model.MinAge.HasValue && model.MinAge.Value > 0)
+                    boardgame.MinAge = model.MinAge.Value;
+
                 boardgame.LastModifiedDate = DateTime.Now;
                 _context.BoardGames.Update(boardgame);
                 await _context.SaveChangesAsync();
