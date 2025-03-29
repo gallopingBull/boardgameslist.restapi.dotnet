@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using MyBGList.Models;
+using MyBGList.Swagger;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
+    options.ParameterFilter<SortColumnFilter>();
+    options.ParameterFilter<SortOrderFilter>();
     options.SwaggerDoc(
         "v1",
         new OpenApiInfo { Title = "MyBGList", Version = "v1.0" });
