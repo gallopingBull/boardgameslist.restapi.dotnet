@@ -1,6 +1,8 @@
-﻿using System.Linq.Dynamic.Core;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Linq.Dynamic.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MyBGList.Attributes;
 using MyBGList.DTO.v1;
 using MyBGList.DTO.v1.MyBGList.DTO;
 using MyBGList.Models;
@@ -25,9 +27,9 @@ namespace MyBGList.Controllers.v1
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<RestDTO<BoardGame[]>> Get(
             int pageIndex = 0,
-            int pageSize = 10,
+            [Range(1, 100)] int pageSize = 10,
             string? sortcolumn = "Name",
-            string? sortOrder = "ASC",
+            [SortOrderValidator()] string? sortOrder = "ASC",
             string? filterQuery = null)
         {
             var query = _context.BoardGames.AsQueryable();
