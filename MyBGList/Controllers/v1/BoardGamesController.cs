@@ -107,31 +107,38 @@ namespace MyBGList.Controllers.v1
 
         [HttpDelete(Name = "DeleteBoardGame")]
         [ResponseCache(NoStore = true)]
-        public async Task<RestDTO<BoardGame?>> Delete(int id)
+        public async Task<RestDTO<BoardGame[]?>> Delete(string ids)
         {
-            var boardgame = await _context.BoardGames
-                .Where(b => b.Id == id)
-                .FirstOrDefaultAsync();
-            if (boardgame != null)
-            {
-                _context.BoardGames.Remove(boardgame);
-                await _context.SaveChangesAsync();
-            };
+            var idArray = ids.Split(',').Select(x => int.Parse(x));
+            var deletedBGList = new List<BoardGame>();
 
-            return new RestDTO<BoardGame?>()
+            foreach (int id in idArray)
             {
-                Data = boardgame,
-                Links = new List<LinkDTO>
+                var boardgame = await _context.BoardGames
+                    .Where(b => b.Id == id)
+                    .FirstOrDefaultAsync();
+                if (boardgame != null)
                 {
-                    new LinkDTO(
-                            Url.Action(
-                                null,
-                                "BoardGames",
-                                id,
-                                Request.Scheme)!,
-                            "self",
-                            "DELETE"),
-                }
+                    deletedBGList.Add(boardgame);
+                    _context.BoardGames.Remove(boardgame);
+                    await _context.SaveChangesAsync();
+                };
+            }
+
+            return new RestDTO<BoardGame[]?>()
+            {
+                Data = deletedBGList.Count > 0 ? deletedBGList.ToArray() : null,
+                Links = new List<LinkDTO>
+                    {
+                        new LinkDTO(
+                                Url.Action(
+                                    null,
+                                    "BoardGames",
+                                    ids,
+                                    Request.Scheme)!,
+                                "self",
+                                "DELETE"),
+                    }
             };
         }
     }
