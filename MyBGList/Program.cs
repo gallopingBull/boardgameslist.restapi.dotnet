@@ -112,7 +112,9 @@ else
 app.UseHttpsRedirection();
 app.UseCors("AnyOrigin");
 app.UseAuthorization();
-app.MapGet("/error",
+app.MapGet("/v{version:ApiVersion}/error",
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     [EnableCors("AnyOrigin")]
     [ResponseCache(NoStore = true)] (HttpContext context) =>
     {
@@ -128,7 +130,7 @@ app.MapGet("/error",
             "https://tools.ietf.org/html/rfc7231#section-6.6.1";
         details.Status = StatusCodes.Status500InternalServerError;
         return Results.Problem(details);
-    });
+});
 //app.MapGet("/v{version:ApiVersion}/error/test",
 //[ApiVersion("1.0")]
 //[ApiVersion("2.0")]
