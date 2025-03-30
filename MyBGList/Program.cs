@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using MyBGList.Constants;
 using MyBGList.Models;
 using MyBGList.Swagger;
 
@@ -121,7 +122,7 @@ app.MapGet("/v{version:ApiVersion}/error",
     [ApiVersion("1.0")]
     [ApiVersion("2.0")]
     [EnableCors("AnyOrigin")]
-    [ResponseCache(NoStore = true)] (HttpContext context) =>
+    [ResponseCache(NoStore = true)] (HttpContext context, ILogger logger) =>
     {
         var exceptionHandler =
             context.Features.Get<IExceptionHandlerPathFeature>();
@@ -134,6 +135,12 @@ app.MapGet("/v{version:ApiVersion}/error",
         details.Type =
             "https://tools.ietf.org/html/rfc7231#section-6.6.1";
         details.Status = StatusCodes.Status500InternalServerError;
+        
+        app.Logger.LogError(
+            CustomLogEvents.Error_Get,
+            exceptionHandler?.Error,
+            "An unhandled exception occurred.");
+
         return Results.Problem(details);
 });
 //app.MapGet("/v{version:ApiVersion}/error/test",
