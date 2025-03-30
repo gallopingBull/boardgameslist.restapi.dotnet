@@ -11,8 +11,9 @@ using MyBGList.DTO.v1;
 
 namespace MyBGList.Controllers
 {
-    [Route("[controller]")]
+    [Route("v{version:apiVersion}/[controller]")]
     [ApiController]
+    [ApiVersion("1.0")]
     public class DomainsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
