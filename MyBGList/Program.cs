@@ -112,12 +112,23 @@ else
 app.UseHttpsRedirection();
 app.UseCors("AnyOrigin");
 app.UseAuthorization();
-app.MapGet("/v{version:ApiVersion}/error",
-    [ApiVersion("1.0")]
-    [ApiVersion("2.0")]
+app.MapGet("/error",
     [EnableCors("AnyOrigin")]
-    [ResponseCache(NoStore = true)] () =>
-    Results.Problem()).RequireCors("AnyOrigin");
+    [ResponseCache(NoStore = true)] (HttpContext context) =>
+    {
+        var exceptionHandler =
+            context.Features.Get<IExceptionHandlerPathFeature>();
+
+        var details = new ProblemDetails();
+        details.Detail = exceptionHandler?.Error.Message;
+        details.Extensions["traceId"] =
+            System.Diagnostics.Activity.Current?.Id
+              ?? context.TraceIdentifier;
+        details.Type =
+            "https://tools.ietf.org/html/rfc7231#section-6.6.1";
+        details.Status = StatusCodes.Status500InternalServerError;
+        return Results.Problem(details);
+    });
 //app.MapGet("/v{version:ApiVersion}/error/test",
 //[ApiVersion("1.0")]
 //[ApiVersion("2.0")]
