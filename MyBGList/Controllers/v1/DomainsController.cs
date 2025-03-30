@@ -87,8 +87,36 @@ namespace MyBGList.Controllers
 
         [HttpPost(Name = "UpdateDomain")]
         [ResponseCache(NoStore = true)]
-        public async Task<RestDTO<Domain?>> Post(DomainDTO model)
+        [ManualValidationFilter]
+        public async Task<ActionResult<RestDTO<Domain?>>> Post(DomainDTO model)
         {
+            if (!ModelState.IsValid)
+            {
+                var details = new ValidationProblemDetails(ModelState);
+                details.Extensions["traceId"] =
+                    Activity.Current?.Id ?? HttpContext.TraceIdentifier;
+                if (model.Id != 3 && model.Name != "Wargames")
+                {
+                    details.Type =
+                        "https://tools.ietf.org/html/rfc7231#section-6.5.3";
+                    details.Status = StatusCodes.Status403Forbidden;
+                    return new ObjectResult(details)
+                    {
+                        StatusCode = StatusCodes.Status403Forbidden
+                    };
+                }
+                else
+                {
+                    details.Type =
+                        "https://tools.ietf.org/html/rfc7231#section-6.5.1";
+                    details.Status = StatusCodes.Status400BadRequest;
+                    return new BadRequestObjectResult(details)
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest
+                    };
+                }
+            }
+
             var domain = await _context.Domains
                 .Where(b => b.Id == model.Id)
                 .FirstOrDefaultAsync();
