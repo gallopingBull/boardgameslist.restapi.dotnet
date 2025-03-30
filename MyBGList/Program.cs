@@ -112,25 +112,57 @@ else
 app.UseHttpsRedirection();
 app.UseCors("AnyOrigin");
 app.UseAuthorization();
-app.MapGet("/v{version:ApiVersion}/error",
-    [ApiVersion("1.0")]
-    [ApiVersion("2.0")]
-    [EnableCors("AnyOrigin")]
-    [ResponseCache(NoStore = true)] (HttpContext context) =>
-    {
-        var exceptionHandler =
-            context.Features.Get<IExceptionHandlerPathFeature>();
 
-        var details = new ProblemDetails();
-        details.Detail = exceptionHandler?.Error.Message;
-        details.Extensions["traceId"] =
-            System.Diagnostics.Activity.Current?.Id
-              ?? context.TraceIdentifier;
-        details.Type =
-            "https://tools.ietf.org/html/rfc7231#section-6.6.1";
-        details.Status = StatusCodes.Status500InternalServerError;
-        return Results.Problem(details);
-});
+app.MapGet("/v{version:ApiVersion}/error",
+        [EnableCors("AnyOrigin")]
+[       ResponseCache(NoStore = true)] (HttpContext context) =>
+        {
+            var exceptionHandler =
+                context.Features.Get<IExceptionHandlerPathFeature>();
+
+            var details = new ProblemDetails();
+            details.Detail = exceptionHandler?.Error.Message;
+            details.Extensions["traceId"] =
+                System.Diagnostics.Activity.Current?.Id
+                  ?? context.TraceIdentifier;
+
+            if (exceptionHandler?.Error is NotImplementedException)
+            {
+                details.Type =
+                    "https://tools.ietf.org/html/rfc7231#section-6.6.2";
+                details.Status = StatusCodes.Status501NotImplemented;
+            }
+            else if (exceptionHandler?.Error is TimeoutException)
+            {
+                details.Type =
+                    "https://tools.ietf.org/html/rfc7231#section-6.6.5";
+                details.Status = StatusCodes.Status504GatewayTimeout;
+            }
+            else
+            {
+                details.Type =
+                    "https://tools.ietf.org/html/rfc7231#section-6.6.1";
+                details.Status = StatusCodes.Status500InternalServerError;
+            }
+
+            return Results.Problem(details);
+        });
+
+app.MapGet("/error/test",
+    [EnableCors("AnyOrigin")]
+    [ResponseCache(NoStore = true)] () =>
+    { throw new Exception("test"); });
+
+app.MapGet("/error/test/501",
+    [EnableCors("AnyOrigin")]
+    [ResponseCache(NoStore = true)] () =>
+    { throw new NotImplementedException("test 501"); });
+
+app.MapGet("/error/test/504",
+    [EnableCors("AnyOrigin")]
+    [ResponseCache(NoStore = true)] () =>
+    { throw new TimeoutException("test 504"); });
+
 //app.MapGet("/v{version:ApiVersion}/error/test",
 //[ApiVersion("1.0")]
 //[ApiVersion("2.0")]
