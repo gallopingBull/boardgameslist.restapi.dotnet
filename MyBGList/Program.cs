@@ -10,6 +10,11 @@ using MyBGList.Swagger;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging
+    .ClearProviders()
+    .AddSimpleConsole()
+    .AddDebug();
+
 // Add services to the container.
 
 builder.Services.AddControllers(options =>
