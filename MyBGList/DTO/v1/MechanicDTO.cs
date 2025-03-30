@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using MyBGList.Attributes;
 
 namespace MyBGList.DTO
 {
@@ -9,6 +10,7 @@ namespace MyBGList.DTO
         [Required]
         public int Id { get; set; }
 
+        [LettersOnlyValidator(UseRegex = true)]
         public string? Name { get; set; }
     }
 }
