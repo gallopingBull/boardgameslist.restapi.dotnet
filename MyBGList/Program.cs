@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Versioning;
@@ -80,8 +81,8 @@ builder.Services.AddCors(options =>
 });
 
 // Code replaced by the [ManualValidationFilter] attribute
-builder.Services.Configure<ApiBehaviorOptions>(options =>
-   options.SuppressModelStateInvalidFilter = true);
+//builder.Services.Configure<ApiBehaviorOptions>(options =>
+//   options.SuppressModelStateInvalidFilter = true);
 
 var app = builder.Build();
 
