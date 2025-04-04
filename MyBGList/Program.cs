@@ -1,3 +1,4 @@
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Logging
     .ClearProviders()
     .AddSimpleConsole()
-    .AddDebug();
+    .AddDebug()
+    .AddApplicationInsights(telemetry => telemetry
+       .ConnectionString = builder
+           .Configuration["Azure:ApplicationInsights:ConnectionString"],
+       loggerOptions => { });
 
 // Add services to the container.
 
@@ -122,7 +127,7 @@ app.MapGet("/v{version:ApiVersion}/error",
     [ApiVersion("1.0")]
     [ApiVersion("2.0")]
     [EnableCors("AnyOrigin")]
-    [ResponseCache(NoStore = true)] (HttpContext context, ILogger logger) =>
+    [ResponseCache(NoStore = true)] (HttpContext context) =>
     {
         var exceptionHandler =
             context.Features.Get<IExceptionHandlerPathFeature>();
