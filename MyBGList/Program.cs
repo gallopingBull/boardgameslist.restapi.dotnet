@@ -16,7 +16,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging
     .ClearProviders()
-    .AddSimpleConsole()
+    .AddJsonConsole( // Exercise 7.5.1
+        options => {
+            options.TimestampFormat = "HH:mm"; // Excercise 7.5.2
+            options.UseUtcTimestamp = true; // Excercise 7.5.2
+        }
+    )
     .AddDebug()
     .AddApplicationInsights(telemetry => telemetry
        .ConnectionString = builder
