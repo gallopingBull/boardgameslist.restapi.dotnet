@@ -40,6 +40,13 @@ builder.Host.UseSerilog((ctx, lc) =>
             "[{MachineName} #{ThreadId} {ThreadName}] " + // Excercise 7.5.4
             "{Message:lj}{NewLine}{Exception}",
         rollingInterval: RollingInterval.Day);
+    lc.WriteTo.File("Logs/errors.txt", // Excercise 7.5.5
+        outputTemplate:
+            "{Timestamp:HH:mm:ss} [{Level:u3}] " +
+            "[{MachineName} #{ThreadId} {ThreadName}] " +
+            "{Message:lj}{NewLine}{Exception}",
+        restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error,
+        rollingInterval: RollingInterval.Day);
     lc.WriteTo.MSSqlServer(
         connectionString:
             ctx.Configuration.GetConnectionString("DefaultConnection"),
