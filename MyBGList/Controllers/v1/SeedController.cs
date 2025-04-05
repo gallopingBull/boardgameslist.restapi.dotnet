@@ -30,7 +30,7 @@ namespace MyBGList.Controllers.v1
         }
 
         [HttpPut(Name = "Seed")]
-        [ResponseCache(NoStore = true)]
+        [ResponseCache(CacheProfileName = "NoCache")]
         public async Task<IActionResult> Put()
         {
             // SETUP
