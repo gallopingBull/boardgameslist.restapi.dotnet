@@ -159,6 +159,19 @@ else
 app.UseHttpsRedirection();
 app.UseCors("AnyOrigin");
 app.UseAuthorization();
+
+// Adds a default cache-control directive
+app.Use((context, next) =>
+{
+    context.Response.GetTypedHeaders().CacheControl =
+            new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
+            {
+                NoCache = true,
+                NoStore = true
+            };
+    return next.Invoke();
+});
+
 app.MapGet("/v{version:ApiVersion}/error",
     [ApiVersion("1.0")]
     [ApiVersion("2.0")]
