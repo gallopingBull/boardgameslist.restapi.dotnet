@@ -202,6 +202,24 @@ app.MapGet("/v{version:ApiVersion}/cod/test",
     "Client time (UTC): ' + new Date().toISOString());" +
     "</script>" +
     "<noscript>Your client does not support Javascript</noscript>", "text/html"));
+
+app.MapGet("/cache/test/1",
+    [EnableCors("AnyOrigin")]
+(HttpContext context) =>
+    {
+        context.Response.Headers["cache-control"] =
+            "no-cache, no-store";
+        return Results.Ok();
+    });
+
+app.MapGet("/cache/test/2",
+    [EnableCors("AnyOrigin")]
+(HttpContext context) =>
+    {
+        return Results.Ok();
+    });
+
+
 app.MapControllers()
     .RequireCors("AnyOrigin");
 
