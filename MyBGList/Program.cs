@@ -37,7 +37,7 @@ builder.Host.UseSerilog((ctx, lc) =>
     lc.WriteTo.File("Logs/log.txt",
         outputTemplate:
             "{Timestamp:HH:mm:ss} [{Level:u3}] " +
-            "[{MachineName} #{ThreadId}] " +
+            "[{MachineName} #{ThreadId} {ThreadName}] " + // Excercise 7.5.4
             "{Message:lj}{NewLine}{Exception}",
         rollingInterval: RollingInterval.Day);
     lc.WriteTo.MSSqlServer(
