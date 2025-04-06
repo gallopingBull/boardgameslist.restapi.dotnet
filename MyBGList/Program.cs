@@ -144,6 +144,16 @@ builder.Services.AddResponseCaching(options =>
 
 builder.Services.AddMemoryCache();
 
+// SQL Server Distributed Cache
+// --------------------------------------
+builder.Services.AddDistributedSqlServerCache(options =>
+{
+    options.ConnectionString =
+        builder.Configuration.GetConnectionString("DefaultConnection");
+    options.SchemaName = "dbo";
+    options.TableName = "AppCache";
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
