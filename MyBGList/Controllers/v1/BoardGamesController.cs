@@ -32,7 +32,7 @@ namespace MyBGList.Controllers.v1
         }
 
         [HttpGet(Name = "GetBoardGames")]
-        [ResponseCache(CacheProfileName = "Any-60")]
+        [ResponseCache(CacheProfileName = "Client-120")]
         public async Task<RestDTO<BoardGame[]>> Get(
             [FromQuery] RequestDTO<BoardGameDTO> input)
         {
