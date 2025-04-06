@@ -154,7 +154,7 @@ builder.Services.AddMemoryCache();
 //    options.ConnectionString =
 //        builder.Configuration.GetConnectionString("DefaultConnection");
 //    options.SchemaName = "dbo";
-//    options.TableName = "AppCache";
+//    options.TableName = "SQLCache";
 //});
 
 // Redis Distributed Cache
