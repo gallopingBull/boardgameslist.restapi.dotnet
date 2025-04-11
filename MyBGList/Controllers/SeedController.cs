@@ -181,6 +181,14 @@ namespace MyBGList.Controllers
                 rolesCreated++;
             }
 
+            // Exercise 9.5.1
+            if (!await _roleManager.RoleExistsAsync(RoleNames.SuperAdmin))
+            {
+                await _roleManager.CreateAsync(
+                    new IdentityRole(RoleNames.SuperAdmin));
+                rolesCreated++;
+            }
+
             var testModerator = await _userManager
                 .FindByNameAsync("TestModerator");
             if (testModerator != null
