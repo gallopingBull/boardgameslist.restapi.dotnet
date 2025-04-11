@@ -344,6 +344,11 @@ app.MapGet("/auth/test/4",
     [Authorize(Roles = RoleNames.SuperAdmin)]
     [EnableCors("AnyOrigin")]
     [ResponseCache(NoStore = true)] () =>
+    {
+        return Results.Ok("You are authorized!");
+    });
+
+
 
 //app.MapGet("/auth/test/2",
 //    [Authorize(Roles = RoleNames.Moderator)]
