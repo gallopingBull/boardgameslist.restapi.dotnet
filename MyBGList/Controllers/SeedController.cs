@@ -204,6 +204,22 @@ namespace MyBGList.Controllers
                 usersAddedToRoles++;
             }
 
+            // Exercise 9.5.3
+            var testSuperAdmin = await _userManager
+                .FindByNameAsync("TestSuperAdmin");
+            if (testSuperAdmin != null
+                && !await _userManager.IsInRoleAsync(
+                    testSuperAdmin, RoleNames.SuperAdmin))
+            {
+                await _userManager.AddToRoleAsync(
+                    testSuperAdmin, RoleNames.Moderator);
+                await _userManager.AddToRoleAsync(
+                    testSuperAdmin, RoleNames.Administrator);
+                await _userManager.AddToRoleAsync(
+                testSuperAdmin, RoleNames.SuperAdmin);
+                usersAddedToRoles++;
+            }
+
             return new JsonResult(new
             {
                 RolesCreated = rolesCreated,
