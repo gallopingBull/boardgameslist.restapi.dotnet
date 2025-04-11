@@ -75,7 +75,7 @@ namespace MyBGList.Controllers
             };
         }
 
-        [Authorize]
+        [Authorize(Roles = RoleNames.Moderator)]
         [HttpPost(Name = "UpdateBoardGame")]
         [ResponseCache(CacheProfileName = "NoCache")]
         public async Task<RestDTO<BoardGame?>> Post(BoardGameDTO model)

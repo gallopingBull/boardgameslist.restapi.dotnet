@@ -10,9 +10,11 @@ using Microsoft.Extensions.Caching.Distributed;
 using MyBGList.Extensions;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
+using MyBGList.Constants;
 
 namespace MyBGList.Controllers
 {
+    [Authorize(Roles = RoleNames.Moderator)]
     [Route("[controller]")]
     [ApiController]
     public class MechanicsController : ControllerBase
@@ -73,7 +75,7 @@ namespace MyBGList.Controllers
             };
         }
 
-        [Authorize]
+        [Authorize(Roles = RoleNames.Moderator)]
         [HttpPost(Name = "UpdateMechanic")]
         [ResponseCache(CacheProfileName = "NoCache")]
         public async Task<RestDTO<Mechanic?>> Post(MechanicDTO model)
