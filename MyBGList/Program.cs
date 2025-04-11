@@ -1,11 +1,9 @@
-using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -14,6 +12,7 @@ using MyBGList.Models;
 using MyBGList.Swagger;
 using Serilog;
 using Serilog.Sinks.MSSqlServer;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -85,6 +84,30 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.ParameterFilter<SortColumnFilter>();
     options.ParameterFilter<SortOrderFilter>();
+
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "bearer"
+    });
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
     options.SwaggerDoc(
         "v1",
         new OpenApiInfo { Title = "MyBGList", Version = "v1.0" });
