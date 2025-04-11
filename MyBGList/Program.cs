@@ -173,11 +173,13 @@ builder.Services.AddAuthentication(options =>
 
 //builder.Services.AddAuthorization(options =>
 //{
-//    options.AddPolicy("ModeratorWithMobilePhone", policy =>
+//  // Claims Based Access Control(CBAC)
+//  options.AddPolicy("ModeratorWithMobilePhone", policy =>
 //        policy
 //            .RequireClaim(ClaimTypes.Role, RoleNames.Moderator)
 //            .RequireClaim(ClaimTypes.MobilePhone));
-//
+//   
+//    // Policy Based Access Policy(PBAC)
 //    options.AddPolicy("MinAge18", policy =>
 //        policy
 //            .RequireAssertion(ctx =>
