@@ -10,6 +10,7 @@ using MyBGList.DTO.v1;
 using Microsoft.Extensions.Caching.Distributed;
 using MyBGList.Extensions;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MyBGList.Controllers
 {
@@ -74,6 +75,7 @@ namespace MyBGList.Controllers
             };
         }
 
+        [Authorize]
         [HttpPost(Name = "UpdateMechanic")]
         [ResponseCache(CacheProfileName = "NoCache")]
         public async Task<RestDTO<Mechanic?>> Post(MechanicDTO model)
@@ -107,6 +109,7 @@ namespace MyBGList.Controllers
             };
         }
 
+        [Authorize]
         [HttpDelete(Name = "DeleteMechanic")]
         [ResponseCache(CacheProfileName = "NoCache")]
         public async Task<RestDTO<Mechanic?>> Delete(int id)
