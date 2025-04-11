@@ -192,7 +192,7 @@ namespace MyBGList.Controllers
             }
 
             var testAdministrator = await _userManager
-                .FindByNameAsync("TestAdministrator");
+                .FindByNameAsync("TestAdmin");
             if (testAdministrator != null
                 && !await _userManager.IsInRoleAsync(
                     testAdministrator, RoleNames.Administrator))
