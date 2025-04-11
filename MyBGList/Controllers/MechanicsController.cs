@@ -14,7 +14,6 @@ using MyBGList.Constants;
 
 namespace MyBGList.Controllers
 {
-    [Authorize(Roles = RoleNames.Moderator)]
     [Route("[controller]")]
     [ApiController]
     public class MechanicsController : ControllerBase
@@ -109,7 +108,7 @@ namespace MyBGList.Controllers
             };
         }
 
-        [Authorize]
+        [Authorize(Roles = RoleNames.Administrator)]
         [HttpDelete(Name = "DeleteMechanic")]
         [ResponseCache(CacheProfileName = "NoCache")]
         public async Task<RestDTO<Mechanic?>> Delete(int id)

@@ -120,7 +120,7 @@ namespace MyBGList.Controllers
             };
         }
 
-        [Authorize]
+        [Authorize(Roles = RoleNames.Administrator)]
         [HttpDelete(Name = "DeleteDomain")]
         [ResponseCache(CacheProfileName = "NoCache")]
         public async Task<RestDTO<Domain?>> Delete(int id)
