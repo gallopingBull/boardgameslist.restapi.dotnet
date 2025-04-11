@@ -15,16 +15,14 @@ using Serilog.Sinks.MSSqlServer;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
-
 builder.Logging
     .ClearProviders()
     .AddSimpleConsole()
     .AddDebug()
     .AddApplicationInsights(telemetry => telemetry
-       .ConnectionString = builder
-           .Configuration["Azure:ApplicationInsights:ConnectionString"],
-       loggerOptions => { });
-
+        .ConnectionString = builder
+            .Configuration["Azure:ApplicationInsights:ConnectionString"],
+        loggerOptions => { });
 
 builder.Host.UseSerilog((ctx, lc) =>
 {
@@ -56,10 +54,29 @@ builder.Host.UseSerilog((ctx, lc) =>
                     DataType = System.Data.SqlDbType.NVarChar
                 }
             }
-        });
+        }
+        );
 },
     writeToProviders: true);
+
 // Add services to the container.
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(cfg =>
+    {
+        cfg.WithOrigins(builder.Configuration["AllowedOrigins"]);
+        cfg.AllowAnyHeader();
+        cfg.AllowAnyMethod();
+    });
+    options.AddPolicy(name: "AnyOrigin",
+        cfg =>
+        {
+            cfg.AllowAnyOrigin();
+            cfg.AllowAnyHeader();
+            cfg.AllowAnyMethod();
+        });
+});
 
 builder.Services.AddControllers(options =>
 {
@@ -73,11 +90,10 @@ builder.Services.AddControllers(options =>
         () => $"A value is required.");
 
     options.CacheProfiles.Add("NoCache",
-       new CacheProfile() { NoStore = true });
+        new CacheProfile() { NoStore = true });
     options.CacheProfiles.Add("Any-60",
         new CacheProfile() { Location = ResponseCacheLocation.Any, Duration = 60 });
 });
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -108,28 +124,16 @@ builder.Services.AddSwaggerGen(options =>
             Array.Empty<string>()
         }
     });
-    options.SwaggerDoc(
-        "v1",
-        new OpenApiInfo { Title = "MyBGList", Version = "v1.0" });
-    options.SwaggerDoc(
-        "v2",
-        new OpenApiInfo { Title = "MyBGList", Version = "v2.0" });
-    options.SwaggerDoc(
-       "v3",
-       new OpenApiInfo { Title = "MyBGList", Version = "v3.0" });
 });
-// JS: THIS IS NEEDED TO SUCCESSFULLY READ USER-SECRETS
+
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddUserSecrets<Program>();  // This is crucial for reading secrets
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-////
-
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString)
-    );
+    options.UseSqlServer(connectionString));
 
 builder.Services.AddIdentity<ApiUser, IdentityRole>(options =>
 {
@@ -167,39 +171,28 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddApiVersioning(options =>
-{
-    options.ApiVersionReader = new UrlSegmentApiVersionReader();
-    options.AssumeDefaultVersionWhenUnspecified = true;
-    options.DefaultApiVersion = new ApiVersion(1, 0);
-});
-
-builder.Services.AddVersionedApiExplorer(options =>
-{
-    options.GroupNameFormat = "'v'VVV";
-    options.SubstituteApiVersionInUrl = true;
-});
-
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(cfg =>
-    {
-        cfg.WithOrigins(builder.Configuration["AllowedOrigins"]);
-        cfg.AllowAnyHeader();
-        cfg.AllowAnyMethod();
-    });
-    options.AddPolicy(name: "AnyOrigin",
-        cfg =>
-        {
-            cfg.AllowAnyOrigin();
-            cfg.AllowAnyHeader();
-            cfg.AllowAnyMethod();
-        });
-});
+//builder.Services.AddAuthorization(options =>
+//{
+//    options.AddPolicy("ModeratorWithMobilePhone", policy =>
+//        policy
+//            .RequireClaim(ClaimTypes.Role, RoleNames.Moderator)
+//            .RequireClaim(ClaimTypes.MobilePhone));
+//
+//    options.AddPolicy("MinAge18", policy =>
+//        policy
+//            .RequireAssertion(ctx =>
+//                ctx.User.HasClaim(c => c.Type == ClaimTypes.DateOfBirth)
+//                && DateTime.ParseExact(
+//                    "yyyyMMdd",
+//                    ctx.User.Claims.First(c =>
+//                        c.Type == ClaimTypes.DateOfBirth).Value,
+//                    System.Globalization.CultureInfo.InvariantCulture)
+//                    >= DateTime.Now.AddYears(-18)));
+//});
 
 // Code replaced by the [ManualValidationFilter] attribute
-//builder.Services.Configure<ApiBehaviorOptions>(options =>
-//   options.SuppressModelStateInvalidFilter = true);
+// builder.Services.Configure<ApiBehaviorOptions>(options =>
+//    options.SuppressModelStateInvalidFilter = true);
 
 builder.Services.AddResponseCaching(options =>
 {
@@ -211,50 +204,43 @@ builder.Services.AddMemoryCache();
 
 // SQL Server Distributed Cache
 // --------------------------------------
-//builder.Services.AddDistributedSqlServerCache(options =>
-//{
-//    options.ConnectionString =
-//        builder.Configuration.GetConnectionString("DefaultConnection");
-//    options.SchemaName = "dbo";
-//    options.TableName = "AppCache";
-//});
+builder.Services.AddDistributedSqlServerCache(options =>
+{
+    options.ConnectionString =
+        builder.Configuration.GetConnectionString("DefaultConnection");
+    options.SchemaName = "dbo";
+    options.TableName = "AppCache";
+});
 
 // Redis Distributed Cache
 // --------------------------------------
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = builder.Configuration["Redis:ConnectionString"];
-});
+//builder.Services.AddStackExchangeRedisCache(options =>
+//{
+//    options.Configuration = builder.Configuration["Redis:Configuration"];
+//});
+
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Configuration.GetValue<bool>("UseSwagger"))
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint(
-            $"/swagger/v1/swagger.json",
-            $"MyBGList v1");
-        options.SwaggerEndpoint(
-            $"/swagger/v2/swagger.json",
-            $"MyBGList v2");
-        options.SwaggerEndpoint(
-            $"/swagger/v3/swagger.json",
-            $"MyBGList v3");
-        
-    });
+    app.UseSwaggerUI();
 }
+
 if (app.Configuration.GetValue<bool>("UseDeveloperExceptionPage"))
     app.UseDeveloperExceptionPage();
 else
     app.UseExceptionHandler("/error");
 
 app.UseHttpsRedirection();
-app.UseCors("AnyOrigin");
+
+app.UseCors();
+
 app.UseResponseCaching();
-app.UseAuthentication();    
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 // Adds a default cache-control directive
@@ -269,11 +255,10 @@ app.Use((context, next) =>
     return next.Invoke();
 });
 
-app.MapGet("/v{version:ApiVersion}/error",
-    [ApiVersion("1.0")]
-    [ApiVersion("2.0")]
+// Minimal API
+app.MapGet("/error",
     [EnableCors("AnyOrigin")]
-    [ResponseCache(NoStore = true)] (HttpContext context) =>
+[ResponseCache(NoStore = true)] (HttpContext context) =>
     {
         var exceptionHandler =
             context.Features.Get<IExceptionHandlerPathFeature>();
@@ -286,32 +271,32 @@ app.MapGet("/v{version:ApiVersion}/error",
         details.Type =
             "https://tools.ietf.org/html/rfc7231#section-6.6.1";
         details.Status = StatusCodes.Status500InternalServerError;
-        
+
         app.Logger.LogError(
             CustomLogEvents.Error_Get,
             exceptionHandler?.Error,
             "An unhandled exception occurred.");
 
         return Results.Problem(details);
-});
-//app.MapGet("/v{version:ApiVersion}/error/test",
-//[ApiVersion("1.0")]
-//[ApiVersion("2.0")]
-//[EnableCors("AnyOrigin")]
-//[ResponseCache(NoStore = true)] () => { throw new Exception("test"); });
-app.MapGet("/v{version:ApiVersion}/cod/test",
-    [ApiVersion("1.0")]
-    [ApiVersion("2.0")]
+    });
+
+app.MapGet("/error/test",
     [EnableCors("AnyOrigin")]
-    [ResponseCache(NoStore = true)] () =>
+[ResponseCache(NoStore = true)] () =>
+    { throw new Exception("test"); });
+
+app.MapGet("/cod/test",
+    [EnableCors("AnyOrigin")]
+[ResponseCache(NoStore = true)] () =>
     Results.Text("<script>" +
-    "window.alert('Your client supports Javascript!" +
-    "\\r\\n\\r\\n" +
-    $"Server time (UTC): {DateTime.UtcNow.ToString("o")}" +
-    "\\r\\n" +
-    "Client time (UTC): ' + new Date().toISOString());" +
-    "</script>" +
-    "<noscript>Your client does not support Javascript</noscript>", "text/html"));
+        "window.alert('Your client supports JavaScript!" +
+        "\\r\\n\\r\\n" +
+        $"Server time (UTC): {DateTime.UtcNow.ToString("o")}" +
+        "\\r\\n" +
+        "Client time (UTC): ' + new Date().toISOString());" +
+        "</script>" +
+        "<noscript>Your client does not support JavaScript</noscript>",
+        "text/html"));
 
 app.MapGet("/cache/test/1",
     [EnableCors("AnyOrigin")]
@@ -329,8 +314,31 @@ app.MapGet("/cache/test/2",
         return Results.Ok();
     });
 
+app.MapGet("/auth/test/1",
+    [Authorize]
+[EnableCors("AnyOrigin")]
+[ResponseCache(NoStore = true)] () =>
+    {
+        return Results.Ok("You are authorized!");
+    });
 
-app.MapControllers()
-    .RequireCors("AnyOrigin");
+//app.MapGet("/auth/test/2",
+//    [Authorize(Roles = RoleNames.Moderator)]
+//[EnableCors("AnyOrigin")]
+//[ResponseCache(NoStore = true)] () =>
+//    {
+//        return Results.Ok("You are authorized!");
+//    });
+//
+//app.MapGet("/auth/test/3",
+//    [Authorize(Roles = RoleNames.Administrator)]
+//[EnableCors("AnyOrigin")]
+//[ResponseCache(NoStore = true)] () =>
+//    {
+//        return Results.Ok("You are authorized!");
+//    });
+
+// Controllers
+app.MapControllers().RequireCors("AnyOrigin");
 
 app.Run();
