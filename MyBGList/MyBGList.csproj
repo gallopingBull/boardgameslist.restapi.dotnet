@@ -37,10 +37,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="gRPC\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Protobuf Include="gRPC/grpc.proto" />
   </ItemGroup>
 
