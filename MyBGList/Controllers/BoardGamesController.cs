@@ -29,51 +29,83 @@ namespace MyBGList.Controllers
             _logger = logger;
             _memoryCache = memoryCache;
         }
-
-        [HttpGet(Name = "GetBoardGames")]
+        [HttpGet("{id}")]
         [ResponseCache(CacheProfileName = "Any-60")]
-        public async Task<RestDTO<BoardGame[]>> Get(
-            [FromQuery] RequestDTO<BoardGameDTO> input)
+        public async Task<RestDTO<BoardGame?>> Get(int id)
         {
             _logger.LogInformation(CustomLogEvents.BoardGamesController_Get,
-                "Get method started.");
+                "GetBoardGame method started.");
 
-            var query = _context.BoardGames.AsQueryable();
-            if (!string.IsNullOrEmpty(input.FilterQuery))
-                query = query.Where(b => b.Name.Contains(input.FilterQuery));
-
-            var recordCount = await query.CountAsync();
-
-            BoardGame[]? result = null;
-            var cacheKey = $"{input.GetType()}-{JsonSerializer.Serialize(input)}";
-            if (!_memoryCache.TryGetValue(cacheKey, out result))
+            BoardGame? result = null;
+            var cacheKey = $"GetBoardGame-{id}";
+            if (!_memoryCache.TryGetValue<BoardGame>(cacheKey, out result))
             {
-                query = query
-                        .OrderBy($"{input.SortColumn} {input.SortOrder}")
-                        .Skip(input.PageIndex * input.PageSize)
-                        .Take(input.PageSize);
-                result = await query.ToArrayAsync();
+                result = await _context.BoardGames.FirstOrDefaultAsync(bg => bg.Id == id);
                 _memoryCache.Set(cacheKey, result, new TimeSpan(0, 0, 30));
             }
 
-            return new RestDTO<BoardGame[]>()
+            return new RestDTO<BoardGame?>()
             {
                 Data = result,
-                PageIndex = input.PageIndex,
-                PageSize = input.PageSize,
-                RecordCount = recordCount,
+                PageIndex = 0,
+                PageSize = 1,
+                RecordCount = result != null ? 1 : 0,
                 Links = new List<LinkDTO> {
                     new LinkDTO(
                         Url.Action(
                             null,
                             "BoardGames",
-                            new { input.PageIndex, input.PageSize },
+                            new { id },
                             Request.Scheme)!,
                         "self",
                         "GET"),
                 }
             };
         }
+        //[HttpGet(Name = "GetBoardGames")]
+        //[ResponseCache(CacheProfileName = "Any-60")]
+        //public async Task<RestDTO<BoardGame[]>> Get(
+        //    [FromQuery] RequestDTO<BoardGameDTO> input)
+        //{
+        //    _logger.LogInformation(CustomLogEvents.BoardGamesController_Get,
+        //        "Get method started.");
+        //
+        //    var query = _context.BoardGames.AsQueryable();
+        //    if (!string.IsNullOrEmpty(input.FilterQuery))
+        //        query = query.Where(b => b.Name.Contains(input.FilterQuery));
+        //
+        //    var recordCount = await query.CountAsync();
+        //
+        //    BoardGame[]? result = null;
+        //    var cacheKey = $"{input.GetType()}-{JsonSerializer.Serialize(input)}";
+        //    if (!_memoryCache.TryGetValue(cacheKey, out result))
+        //    {
+        //        query = query
+        //                .OrderBy($"{input.SortColumn} {input.SortOrder}")
+        //                .Skip(input.PageIndex * input.PageSize)
+        //                .Take(input.PageSize);
+        //        result = await query.ToArrayAsync();
+        //        _memoryCache.Set(cacheKey, result, new TimeSpan(0, 0, 30));
+        //    }
+        //
+        //    return new RestDTO<BoardGame[]>()
+        //    {
+        //        Data = result,
+        //        PageIndex = input.PageIndex,
+        //        PageSize = input.PageSize,
+        //        RecordCount = recordCount,
+        //        Links = new List<LinkDTO> {
+        //            new LinkDTO(
+        //                Url.Action(
+        //                    null,
+        //                    "BoardGames",
+        //                    new { input.PageIndex, input.PageSize },
+        //                    Request.Scheme)!,
+        //                "self",
+        //                "GET"),
+        //        }
+        //    };
+        //}
 
         [Authorize(Roles = RoleNames.Moderator)]
         [HttpPost(Name = "UpdateBoardGame")]
