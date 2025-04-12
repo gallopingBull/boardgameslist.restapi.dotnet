@@ -30,7 +30,7 @@ namespace MyBGList.Controllers
             headers.Add("Authorization", $"Bearer {token}");
 
             using var channel = GrpcChannel
-                .ForAddress("https://localhost:40443");
+                .ForAddress("https://localhost:55222");
             var client = new gRPC.Grpc.GrpcClient(channel);
             var response = await client.UpdateBoardGameAsync(
                                 new UpdateBoardGameRequest
