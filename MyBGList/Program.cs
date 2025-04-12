@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MyBGList.Constants;
+using MyBGList.GraphQL;
+//using MyBGList.gRPC;
 using MyBGList.Models;
 using MyBGList.Swagger;
 using Serilog;
@@ -135,6 +137,14 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
+builder.Services.AddGraphQLServer()
+    .AddAuthorization()
+    .AddQueryType<Query>()
+    .AddMutationType<Mutation>()
+    .AddProjections()
+    .AddFiltering()
+    .AddSorting();
+
 builder.Services.AddIdentity<ApiUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = true;
@@ -244,6 +254,8 @@ app.UseResponseCaching();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapGraphQL();
 
 // Adds a default cache-control directive
 app.Use((context, next) =>
