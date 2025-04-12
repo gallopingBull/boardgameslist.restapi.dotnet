@@ -9,6 +9,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MyBGList.Constants;
 using MyBGList.GraphQL;
+using MyBGList.gRPC;
+
 //using MyBGList.gRPC;
 using MyBGList.Models;
 using MyBGList.Swagger;
@@ -145,6 +147,8 @@ builder.Services.AddGraphQLServer()
     .AddFiltering()
     .AddSorting();
 
+builder.Services.AddGrpc();
+
 builder.Services.AddIdentity<ApiUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = true;
@@ -256,6 +260,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGraphQL();
+
+app.MapGrpcService<GrpcService>();  
 
 // Adds a default cache-control directive
 app.Use((context, next) =>
