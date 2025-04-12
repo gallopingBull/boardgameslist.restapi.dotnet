@@ -36,4 +36,12 @@
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.23" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="gRPC\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="gRPC/grpc.proto" />
+  </ItemGroup>
+
 </Project>
