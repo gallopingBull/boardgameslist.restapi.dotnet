@@ -89,7 +89,9 @@ namespace MyBGList.Controllers
         [SwaggerOperation(
             Summary = "Get a single board game.",
             Description = "Retrieves a single board game with the given Id.")]
-        public async Task<RestDTO<BoardGame?>> Get(int id)
+        public async Task<RestDTO<BoardGame?>> Get(
+            [CustomKeyValue("x-test-3", "value 3")] 
+            int id)
         {
             _logger.LogInformation(CustomLogEvents.BoardGamesController_Get,
                 "GetBoardGame method started.");

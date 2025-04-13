@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MyBGList.Attributes;
 using MyBGList.Constants;
 using MyBGList.GraphQL;
 using MyBGList.gRPC;
@@ -142,7 +143,7 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<AuthRequirementFilter>();
     options.DocumentFilter<CustomDocumentFilter>();
     options.RequestBodyFilter<PasswordRequestFilter>();
-    //options.SchemaFilter<CustomKeyValueFilter>();
+    options.SchemaFilter<CustomKeyValueFilter>();
 });
 
 builder.Configuration
