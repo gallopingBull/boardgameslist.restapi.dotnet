@@ -123,20 +123,26 @@ builder.Services.AddSwaggerGen(options =>
         BearerFormat = "JWT",
         Scheme = "bearer"
     });
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type=ReferenceType.SecurityScheme,
-                    Id="Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
+    //options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    //{
+    //    {
+    //        new OpenApiSecurityScheme
+    //        {
+    //            Name = "Bearer",
+    //            In = ParameterLocation.Header,
+    //            Reference = new OpenApiReference
+    //            {
+    //                Type=ReferenceType.SecurityScheme,
+    //                Id="Bearer"
+    //            }
+    //        },
+    //        Array.Empty<string>()
+    //    }
+    //});
+    options.OperationFilter<AuthRequirementFilter>();
+    //options.DocumentFilter<CustomDocumentFilter>();
+    //options.RequestBodyFilter<PasswordRequestFilter>();
+    //options.SchemaFilter<CustomKeyValueFilter>();
 });
 
 builder.Configuration
