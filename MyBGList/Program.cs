@@ -140,7 +140,7 @@ builder.Services.AddSwaggerGen(options =>
     //    }
     //});
     options.OperationFilter<AuthRequirementFilter>();
-    //options.DocumentFilter<CustomDocumentFilter>();
+    options.DocumentFilter<CustomDocumentFilter>();
     //options.RequestBodyFilter<PasswordRequestFilter>();
     //options.SchemaFilter<CustomKeyValueFilter>();
 });
