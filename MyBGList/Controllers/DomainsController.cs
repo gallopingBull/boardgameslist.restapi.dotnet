@@ -28,6 +28,13 @@ namespace MyBGList.Controllers
             _logger = logger;
         }
 
+        // Exercise 11.4.1
+        /// <summary>
+        /// Get a list of domains.
+        /// </summary>
+        /// <remarks>Retrieves a list of domains with custom paging, sorting, and filtering rules.</remarks>
+        /// <param name="input">A DTO object that can be used to customize some retrieval parameters.</param>
+        /// <returns>A RestDTO object containing a list of domains.</returns>
         [HttpGet(Name = "GetDomains")]
         [ResponseCache(CacheProfileName = "Any-60")]
         [ManualValidationFilter]
