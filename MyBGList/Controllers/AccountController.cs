@@ -52,6 +52,9 @@ namespace MyBGList.Controllers
         /// <response code="500">An error occurred</response>
         [HttpPost]
         [ResponseCache(CacheProfileName = "NoCache")]
+        [ProducesResponseType(typeof(string), 201)]
+        [ProducesResponseType(typeof(BadRequestObjectResult), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 500)]
         public async Task<ActionResult> Register(RegisterDTO input)
         {
             try
@@ -109,6 +112,9 @@ namespace MyBGList.Controllers
         /// <response code="401">Login failed (unauthorized)</response>
         [HttpPost]
         [ResponseCache(CacheProfileName = "NoCache")]
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(BadRequestObjectResult), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 401)]
         public async Task<ActionResult> Login(LoginDTO input)
         {
             try
@@ -127,24 +133,24 @@ namespace MyBGList.Controllers
                                 System.Text.Encoding.UTF8.GetBytes(
                                     _configuration["JWT:SigningKey"])),
                             SecurityAlgorithms.HmacSha256);
-        
+
                         var claims = new List<Claim>();
                         claims.Add(new Claim(
                             ClaimTypes.Name, user.UserName));
                         claims.AddRange(
                             (await _userManager.GetRolesAsync(user))
                                 .Select(r => new Claim(ClaimTypes.Role, r)));
-        
+
                         var jwtObject = new JwtSecurityToken(
                             issuer: _configuration["JWT:Issuer"],
                             audience: _configuration["JWT:Audience"],
                             claims: claims,
                             expires: DateTime.Now.AddSeconds(300),
                             signingCredentials: signingCredentials);
-        
+
                         var jwtString = new JwtSecurityTokenHandler()
                             .WriteToken(jwtObject);
-        
+
                         return StatusCode(
                             StatusCodes.Status200OK,
                             jwtString);
