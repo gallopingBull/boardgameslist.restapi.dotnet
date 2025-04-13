@@ -143,6 +143,7 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<AuthRequirementFilter>();
     options.DocumentFilter<CustomDocumentFilter>();
     options.RequestBodyFilter<PasswordRequestFilter>();
+    options.RequestBodyFilter<UsernameRequestFilter>(); // Exercise 11.4.4
     options.SchemaFilter<CustomKeyValueFilter>();
 });
 
