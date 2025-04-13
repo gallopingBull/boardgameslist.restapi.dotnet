@@ -108,6 +108,8 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(System.IO.Path.Combine(
         AppContext.BaseDirectory, xmlFilename));
 
+    options.EnableAnnotations();
+
     options.ParameterFilter<SortColumnFilter>();
     options.ParameterFilter<SortOrderFilter>();
 
