@@ -121,7 +121,10 @@ namespace MyBGList.Controllers
         [Authorize(Roles = RoleNames.Administrator)]
         [HttpDelete(Name = "DeleteMechanic")]
         [ResponseCache(CacheProfileName = "NoCache")]
-        public async Task<RestDTO<Mechanic?>> Delete(int id)
+        public async Task<RestDTO<Mechanic?>> Delete(
+            [CustomKeyValue("x-test-4", "value 4")] // Exercise 11.4.5
+            [CustomKeyValue("x-test-5", "value 5")] // Exercise 11.4.5
+            int id)
         {
             var mechanic = await _context.Mechanics
                 .Where(b => b.Id == id)
