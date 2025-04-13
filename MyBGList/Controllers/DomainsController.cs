@@ -94,6 +94,7 @@ namespace MyBGList.Controllers
         }
 
         [Authorize(Roles = RoleNames.Moderator)]
+        [ApiExplorerSettings(IgnoreApi = true)] // Exercise 11.4.3
         [HttpPost(Name = "UpdateDomain")]
         [ResponseCache(CacheProfileName = "NoCache")]
         public async Task<RestDTO<Domain?>> Post(DomainDTO model)
@@ -128,6 +129,7 @@ namespace MyBGList.Controllers
         }
 
         [Authorize(Roles = RoleNames.Administrator)]
+        [ApiExplorerSettings(IgnoreApi = true)] // Exercise 11.4.3
         [HttpDelete(Name = "DeleteDomain")]
         [ResponseCache(CacheProfileName = "NoCache")]
         public async Task<RestDTO<Domain?>> Delete(int id)
