@@ -40,6 +40,12 @@
   <ItemGroup>
     <Protobuf Include="gRPC/grpc.proto" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Data\bgg_dataset.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
