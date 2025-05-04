@@ -275,7 +275,7 @@ else
         context.Response.Headers.Add("X-Content-Type-Options",
             "nosniff");
         context.Response.Headers.Add("Content-Security-Policy",
-            "default-src 'self'; script-src 'self' 'nonce-23a98b38c'");
+            "default-src 'self'; script-src 'self' 'nonce-23a98b38c' ;");
         context.Response.Headers.Add("Referrer-Policy",
             "strict-origin");
         await next();
@@ -343,9 +343,9 @@ app.MapGet("/error/test",
     { throw new Exception("test"); });
 
 app.MapGet("/cod/test",
-    [EnableCors("AnyOrigin")]
+    [EnableCors("AnyOrig<in")]
 [ResponseCache(NoStore = true)] () =>
-    Results.Text("<script>" +
+    Results.Text("<script nonce='23a98b38c'>" +
         "window.alert('Your client supports JavaScript!" +
         "\\r\\n\\r\\n" +
         $"Server time (UTC): {DateTime.UtcNow.ToString("o")}" +
