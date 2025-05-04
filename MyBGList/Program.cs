@@ -61,8 +61,7 @@ builder.Host.UseSerilog((ctx, lc) =>
                     DataType = System.Data.SqlDbType.NVarChar
                 }
             }
-        }
-        );
+        });
 },
     writeToProviders: true);
 
